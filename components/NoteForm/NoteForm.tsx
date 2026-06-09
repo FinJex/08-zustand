@@ -19,7 +19,7 @@ const initialValues: NoteFormValues = {
 }
 
 interface NoteFormProps {
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 export default function NoteForm({
@@ -51,7 +51,7 @@ const mutation = useMutation({
       queryKey: ["notes"],
     });
 
-    onClose();
+    onClose?.();
   },
 });
 const handleSubmit = (
