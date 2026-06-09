@@ -1,0 +1,52 @@
+"use client";
+import { useEffect } from "react";
+import { createPortal } from "react-dom";
+import css from "./Modal.module.css";
+
+interface ModalProps {
+  children: React.ReactNode;
+  onClose: () => void;
+}
+
+export default function Modal({ children, onClose }: ModalProps) {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener(
+      "keydown",
+      handleEscape
+    );
+
+    return () => {
+      document.body.style.overflow = "auto";
+      document.removeEventListener(
+        "keydown",
+        handleEscape
+      );
+    };
+  }, [onClose]);
+
+  const modalRoot = typeof window !== "undefined" ? document.getElementById("modal-root") : null;
+  if (!modalRoot) return null;
+  const handleBackdropClick = (
+    e: React.MouseEvent<HTMLDivElement>
+  ) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  return createPortal(
+    <div className={css.backdrop} onClick={handleBackdropClick}>
+      <div className={css.modal}>
+        {children}
+      </div>
+    </div>,
+    document.body
+  );
+}
