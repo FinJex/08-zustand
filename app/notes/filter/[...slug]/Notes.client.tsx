@@ -13,7 +13,7 @@ import NoteForm from "@/components/NoteForm/NoteForm";
 import SearchBox from "@/components/SearchBox/SearchBox";
 interface NotesClientProps {
   filter: string;
-}
+} 
 const NotesClient = ({ filter }: NotesClientProps) => {
   const [inputValue, setInputValue] = useState("");
   const [search, setSearch] = useState("");
