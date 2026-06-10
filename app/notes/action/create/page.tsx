@@ -4,7 +4,7 @@ import NoteForm from "@/components/NoteForm/NoteForm";
 
 export const metadata: Metadata = {
   title: "Create note",
-  description: "Create a new note witch title, description and tag",
+  description: "Create a new note with title, description and tag",
   openGraph: {
 title:"Create note",
 description: "Create a new note with title, description and tag",

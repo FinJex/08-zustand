@@ -69,7 +69,7 @@ const handleChange = (
   };
 
   const handleCancel = () => {
-    router.back();
+   router.push("/notes/filter/all");
   };
 
   return (
@@ -80,7 +80,7 @@ const handleChange = (
           id={`${fieldId}-title`}
           name="title"
           className={css.input}
-          defaultValue={draft?.title} onChange={handleChange}
+          value={draft?.title} onChange={handleChange}
         />
       </div>
 
@@ -90,7 +90,7 @@ const handleChange = (
           id={`${fieldId}-content`}
           name="content"
           className={css.textarea}
-          defaultValue={draft?.title} onChange={handleChange}
+          value={draft?.content} onChange={handleChange}
         />
       </div>
 
@@ -100,7 +100,7 @@ const handleChange = (
           id={`${fieldId}-tag`}
           name="tag"
           className={css.select}
-          defaultValue={draft?.title} onChange={handleChange}
+          value={draft?.tag} onChange={handleChange}
         >
           <option value="Todo">Todo</option>
           <option value="Work">Work</option>
