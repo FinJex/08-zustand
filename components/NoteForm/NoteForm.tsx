@@ -5,7 +5,7 @@ import { useId } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createNote } from "../../lib/api";
-
+import { useNoteDraft }from "@/lib/store/noteStore";
 type Tag = "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
 
 type NewNote = {
@@ -18,11 +18,27 @@ export default function NoteForm() {
   const fieldId = useId();
   const router = useRouter();
   const queryClient = useQueryClient();
+//!код для зустанду
+const { draft, setDraft, clearDraft } = useNoteDraft();
+
+const handleChange = (
+    event: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {  setDraft({
+      ...draft,
+      [event.target.name]: event.target.value,
+    });
+  };
+//!кінець коду для зустанду
+
+
 
   const mutation = useMutation({
     mutationFn: createNote,
 
     onSuccess: () => {
+      clearDraft();
       queryClient.invalidateQueries({
         queryKey: ["notes"],
       });
@@ -64,6 +80,7 @@ export default function NoteForm() {
           id={`${fieldId}-title`}
           name="title"
           className={css.input}
+          defaultValue={draft?.title} onChange={handleChange}
         />
       </div>
 
@@ -73,6 +90,7 @@ export default function NoteForm() {
           id={`${fieldId}-content`}
           name="content"
           className={css.textarea}
+          defaultValue={draft?.title} onChange={handleChange}
         />
       </div>
 
@@ -82,7 +100,7 @@ export default function NoteForm() {
           id={`${fieldId}-tag`}
           name="tag"
           className={css.select}
-          defaultValue="Todo"
+          defaultValue={draft?.title} onChange={handleChange}
         >
           <option value="Todo">Todo</option>
           <option value="Work">Work</option>
