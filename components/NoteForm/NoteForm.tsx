@@ -1,49 +1,63 @@
 "use client";
+
 import css from "./NoteForm.module.css";
-import { useId, useActionState } from "react";
-import { createNote } from "../../lib/api";
+import { useId } from "react";
 import { useRouter } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createNote } from "../../lib/api";
 
-
+type Tag = "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
 
 type NewNote = {
   title: string;
   content: string;
-  tag: "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
+  tag: Tag;
 };
-
-type Note = {
-  id: string;
-  title: string;
-  content: string;
-  tag: string;
-};
-
-const initialState: Note | null = null;
 
 export default function NoteForm() {
   const fieldId = useId();
-const router = useRouter();
- 
-  const action = async (_prevState: Note | null,formData: FormData): Promise<Note | null> => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: createNote,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notes"],
+      });
+
+      router.back();
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+
     const newNote: NewNote = {
-      title: String(formData.get("title") || ""),
-      content: String(formData.get("content") || ""),
-      tag: formData.get("tag") as NewNote["tag"],
+      title: (formData.get("title") as string).trim(),
+      content: (formData.get("content") as string).trim(),
+      tag: formData.get("tag") as Tag,
     };
 
-    const created = await createNote(newNote);
-    return created;
+
+    if (!newNote.title || !newNote.tag) {
+      return;
+    }
+
+    mutation.mutate(newNote);
+
+    e.currentTarget.reset();
   };
 
-  const [, formAction, isPending] = useActionState(action, initialState);
-
-const handleCancel = () => {
-router.back();
-}
+  const handleCancel = () => {
+    router.back();
+  };
 
   return (
-    <form className={css.form} action={formAction}>
+    <form className={css.form} onSubmit={handleSubmit}>
       <div className={css.formGroup}>
         <label htmlFor={`${fieldId}-title`}>Title</label>
         <input
@@ -68,6 +82,7 @@ router.back();
           id={`${fieldId}-tag`}
           name="tag"
           className={css.select}
+          defaultValue="Todo"
         >
           <option value="Todo">Todo</option>
           <option value="Work">Work</option>
@@ -78,12 +93,20 @@ router.back();
       </div>
 
       <div className={css.actions}>
-        <button type="button" onClick={handleCancel} className={css.cancelButton}>
+        <button
+          type="button"
+          onClick={handleCancel}
+          className={css.cancelButton}
+        >
           Cancel
         </button>
 
-        <button type="submit" disabled={isPending} className={css.submitButton}>
-          Create note
+        <button
+          type="submit"
+          disabled={mutation.isPending}
+          className={css.submitButton}
+        >
+          {mutation.isPending ? "Creating..." : "Create note"}
         </button>
       </div>
     </form>

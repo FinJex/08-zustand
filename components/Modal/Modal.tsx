@@ -31,8 +31,6 @@ export default function Modal({ children, onClose }: ModalProps) {
     };
   }, [onClose]);
 
-  const modalRoot = typeof window !== "undefined" ? document.getElementById("modal-root") : null;
-  if (!modalRoot) return null;
   const handleBackdropClick = (
     e: React.MouseEvent<HTMLDivElement>
   ) => {
